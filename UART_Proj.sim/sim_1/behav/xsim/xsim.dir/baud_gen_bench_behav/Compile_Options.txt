@@ -1,0 +1,1 @@
+-wto "5ad5dacdfc9c4e70921eec3814c32b4d" --incr --debug "typical" --relax --mt "2" -L "xil_defaultlib" -L "secureip" --snapshot "baud_gen_bench_behav" "xil_defaultlib.baud_gen_bench" -log "elaborate.log" 
