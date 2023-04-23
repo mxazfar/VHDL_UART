@@ -3,10 +3,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+--Baud Generator setup for 50 MHz clock @ 19200 baud
+
 entity baud_gen is
     generic(
-        N: integer := 5;
-        M: integer := 17
+        N: integer := 9;
+        M: integer := 164
     );
     
     port(

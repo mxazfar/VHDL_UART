@@ -33,13 +33,6 @@ architecture arch of uart_rx is
     
     begin
     
-    baud: entity Work.baud_gen(arch) port map(
-        clk => clk,
-        reset => reset,
-        max_tick => sys_tick,  
-        q => q
-    );
-     
     process(clk, reset) -- FSMD state and data regs.
     begin
         if (reset = '1') then
