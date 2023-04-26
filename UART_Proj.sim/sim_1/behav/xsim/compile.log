@@ -1,6 +1,2 @@
-INFO: [VRFC 10-163] Analyzing VHDL file "C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.srcs/sim_1/new/baud_gen_bench.vhd" into library xil_defaultlib
-INFO: [VRFC 10-3107] analyzing entity 'baud_gen_bench'
-ERROR: [VRFC 10-3095] actual of formal out port 'flag' cannot be an expression [C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.srcs/sim_1/new/baud_gen_bench.vhd:108]
-WARNING: [VRFC 10-3093] actual for formal port 'flag' is neither a static name nor a globally static expression [C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.srcs/sim_1/new/baud_gen_bench.vhd:108]
-ERROR: [VRFC 10-3782] unit 'behavioral' ignored due to previous errors [C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.srcs/sim_1/new/baud_gen_bench.vhd:10]
-INFO: [VRFC 10-3070] VHDL file 'C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.srcs/sim_1/new/baud_gen_bench.vhd' ignored due to errors
+INFO: [VRFC 10-163] Analyzing VHDL file "C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.srcs/sim_1/new/top.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'top'

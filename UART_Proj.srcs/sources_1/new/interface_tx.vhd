@@ -50,3 +50,4 @@ architecture ff of interface_tx is
     flag <= flag_reg;
     
 end ff;
+
