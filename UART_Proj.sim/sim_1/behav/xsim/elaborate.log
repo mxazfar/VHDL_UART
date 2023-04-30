@@ -15,5 +15,7 @@ Compiling architecture arch of entity xil_defaultlib.baud_gen [baud_gen_default]
 Compiling architecture behavioral of entity xil_defaultlib.interface_fifo [interface_fifo_default]
 Compiling architecture arch of entity xil_defaultlib.uart_tx [uart_tx_default]
 Compiling architecture arch of entity xil_defaultlib.uart_rx [uart_rx_default]
+Compiling architecture behavioral of entity xil_defaultlib.ram [ram_default]
+Compiling architecture behavioral of entity xil_defaultlib.Classifier [classifier_default]
 Compiling architecture behavioral of entity xil_defaultlib.top
 Built simulation snapshot top_behav

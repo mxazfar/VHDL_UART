@@ -3,7 +3,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 use IEEE.NUMERIC_STD.ALL;
 
---Testbench file for simulating UART setup with flag FF buffer
+--Testbench file for simulating UART fully setup
+--After an initial transmission, UART loops forever by writing RX classified back into TX
 
 entity top is
 --  Port ( );
@@ -29,11 +30,30 @@ architecture Behavioral of top is
     signal w_data : std_logic_vector(7 downto 0);
     signal wr_uart : std_logic := '0';
     signal tx_full : std_logic;
+    signal wr_tx_fifo : std_logic;
     
     --RX Interface
     signal r_data : std_logic_vector(7 downto 0);
     signal rd_uart : std_logic;
     signal rx_empty : std_logic;  
+      
+    --FIFO RAM 
+    signal wr_fifo_ram : std_logic;
+    signal rd_fifo_ram : std_logic;
+    signal addr_fifo_ram : std_logic_vector(8 downto 0);
+    
+    --Classification 
+    signal classification_in : std_logic_vector(7 downto 0);
+    signal classification_out : std_logic_vector(7 downto 0);
+    
+    --Classification RAM
+    signal wr_classifier_ram : std_logic;
+    signal rd_classifier_ram : std_logic;
+    signal addr_classifier_ram : std_logic_vector(8 downto 0);
+    signal classifier_ram_out : std_logic_vector(7 downto 0);
+    
+    --Control Signals
+    signal initialTransmission : std_logic := '0';
       
     component baud_gen port(
         clk, reset: in std_logic;
@@ -78,9 +98,28 @@ architecture Behavioral of top is
         rd: in std_logic;
         r_data: out std_logic_vector(8-1 downto 0);
         fifo_full: out std_logic;
-        fifo_empty: out std_logic
+        fifo_empty: out std_logic;
+        num_elem: out std_logic_vector(7 downto 0)
     );  
     end component;
+    
+    component ram port(
+        clk : in std_logic;
+        wr : in std_logic;
+        rd : in std_logic;
+        addr : in std_logic_vector(9-1 downto 0);
+        di : in std_logic_vector(8-1 downto 0);
+        do : out std_logic_vector(8-1 downto 0)
+    );
+    end component;
+    
+    component classifier port(
+        clk, reset: in std_logic;
+        din: in std_logic_vector(8-1 downto 0);
+        dout: out std_logic_vector(8-1 downto 0)
+    );
+    end component;
+    
 begin
 
 u0: baud_gen port map(
@@ -90,21 +129,11 @@ u0: baud_gen port map(
     q => q
 );
 
---u_tx_interface: interface_tx port map(
---    clk => clk,
---    reset => reset,
---    clr_flag => tx_done,
---    set_flag => wr_uart,
---    din => w_data,
---    dout => din,
---    flag => tx_full 
---);
-
 u_tx_interface_fifo : interface_fifo port map(
     clk => clk,
     reset => reset,
-    wr => wr_uart,
-    rd => tx_done,
+    wr => wr_tx_fifo,
+    rd => wr_uart,
     w_data => w_data,
     r_data => din,
     fifo_full => tx_full
@@ -119,16 +148,6 @@ u_tx: uart_tx port map(
     tx_done_tick => tx_done,
     tx => tx
 );
-
---u_rx_interface: interface_tx port map(
---    clk => clk,
---    reset => reset,
---    clr_flag => rx_done_tick, 
---    set_flag => rd_uart,
---    din => dout_rx,
---    dout => r_data,
---    flag => rx_empty 
---);
 
 u_rx_interface_fifo : interface_fifo port map(
     clk => clk,
@@ -149,23 +168,172 @@ u_rx : uart_rx port map(
     dout => dout_rx    
 );
 
+u_fifo_ram : ram port map(
+    clk => clk,
+    wr => wr_fifo_ram,
+    rd => rd_fifo_ram,
+    addr => addr_fifo_ram,
+    di => r_data,
+    do => classification_in
+);
+
+u_classifier : classifier port map(
+    clk => clk,
+    reset => reset,
+    din => classification_in,
+    dout => classification_out
+);
+
+u_classifier_ram : ram port map(
+    clk => clk,
+    wr => wr_classifier_ram,
+    rd => rd_classifier_ram,
+    addr => addr_classifier_ram,
+    di => classification_out,
+    do => classifier_ram_out
+);
+
 reset <= '0';
 clk <= not clk after 10ns;
 
-process 
-begin
+process begin
 
-w_data <= "10100101";
+wait for 30ns;
 
-wait for 1ms;
+if(initialTransmission = '0') then
+    ----------LOAD WRITE DATA INTO TX FIFO----------------------
+    w_data <= x"FF";
+    
+    wait for 20ns;
+    
+    wr_tx_fifo <= '1';
+    wait for 20ns;
+    wr_tx_fifo <= '0';
+    ---------------------------------------------------------
+    
+    ----------WRITE UART----------------------------------    
+    wr_uart <= '1';
+    wait until tx_done = '1';
+    wr_uart <= '0';
+    
+    wait for 0.5ms;
+    ------------------------------------------------------
+    
+    ---------READ UART, STORING INTO RX FIFO---------------    
+    rd_uart <= '1';
+    wait for 500ns;
+    rd_uart  <= '0';
+    
+    wait for 0.5ms;
+    --------------------------------------------------------
+    
+    -----------WRITE DATA INTO FIFO RAM--------------------    
+    addr_fifo_ram  <= "000000000";
+    
+    wr_fifo_ram <= '1';
+    wait for 500ns;
+    wr_fifo_ram  <= '0';
+    
+    wait for 0.5ms;
+    ----------------------------------------------------------    
+        
+    -------------READ DATA FROM FIFO RAM, SENDING TO CLASSIFIER----- 
+    rd_fifo_ram <= '1';
+    wait for 500ns;
+    rd_fifo_ram <= '0';
+    
+    wait for 0.5ms;
+    ------------------------------------------------------------  
+    
+    ------------WRITE CLASSIFIER TO RAM----------------------
+    addr_classifier_ram  <= "000000000";
+    
+    wr_classifier_ram <= '1';
+    wait for 500ns;
+    wr_classifier_ram  <= '0';
+    
+    wait for 0.5ms;
+    ---------------------------------------------------------  
+    
+    ------------READ CLASSIFIER RAM, WRITEBACK TO TX----------------------
+    addr_classifier_ram  <= "000000000";
+    
+    rd_classifier_ram <= '1';
+    wait for 500ns;
+    rd_classifier_ram  <= '0';
+    
+    wait for 0.5ms;
+    w_data <= classifier_ram_out;
+    ---------------------------------------------------------  
+    
+    initialTransmission <= '1';
+end if;
 
-wr_uart <= '1';
+if(initialTransmission = '1') then 
+    wait for 0.5ms;
 
-wait until tx_done = '1';
-wr_uart <= '0';
+    ----------LOAD WRITE DATA INTO TX FIFO----------------------
+    wr_tx_fifo <= '1';
+    wait for 20ns;
+    wr_tx_fifo <= '0';
+    ---------------------------------------------------------
+    
+    ----------WRITE UART----------------------------------    
+    wr_uart <= '1';
+    wait until tx_done = '1';
+    wr_uart <= '0';
+    
+    wait for 0.5ms;
+    ------------------------------------------------------
+    
+    ---------READ UART, STORING INTO RX FIFO---------------    
+    rd_uart <= '1';
+    wait for 500ns;
+    rd_uart  <= '0';
+    
+    wait for 0.5ms;
+    --------------------------------------------------------
+    
+    -----------WRITE DATA INTO FIFO RAM--------------------    
+    addr_fifo_ram  <= "000000000";
+    
+    wr_fifo_ram <= '1';
+    wait for 500ns;
+    wr_fifo_ram  <= '0';
+    
+    wait for 0.5ms;
+    ----------------------------------------------------------    
+        
+    -------------READ DATA FROM FIFO RAM, SENDING TO CLASSIFIER----- 
+    rd_fifo_ram <= '1';
+    wait for 500ns;
+    rd_fifo_ram <= '0';
+    
+    wait for 0.5ms;
+    ------------------------------------------------------------  
+    
+    ------------WRITE CLASSIFIER TO RAM----------------------
+    addr_classifier_ram  <= "000000000";
+    
+    wr_classifier_ram <= '1';
+    wait for 500ns;
+    wr_classifier_ram  <= '0';
+    
+    wait for 0.5ms;
+    ---------------------------------------------------------  
+    
+    ------------READ CLASSIFIER RAM, WRITEBACK TO TX----------------------
+    addr_classifier_ram  <= "000000000";
+    
+    rd_classifier_ram <= '1';
+    wait for 500ns;
+    rd_classifier_ram  <= '0';
+    
+    wait for 0.5ms;
+    w_data <= classifier_ram_out;
+    ---------------------------------------------------------  
 
-wait for 0.6ms;
-rd_uart <= '1';
+end if;
 
 end process;
 

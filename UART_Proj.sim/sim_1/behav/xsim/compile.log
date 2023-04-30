@@ -1,2 +1,2 @@
-INFO: [VRFC 10-163] Analyzing VHDL file "C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.srcs/sim_1/new/top.vhd" into library xil_defaultlib
-INFO: [VRFC 10-3107] analyzing entity 'top'
+INFO: [VRFC 10-163] Analyzing VHDL file "C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.srcs/sources_1/new/classifier.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'Classifier'

@@ -4,6 +4,8 @@ use ieee.numeric_std.all;
 
 use std.env.finish;
 
+--Testbench for simulating FIFO
+
 entity fifo_bench is
 end fifo_bench; 
 
@@ -11,7 +13,7 @@ architecture sim of fifo_bench is
 
 constant W : natural := 8;
 
---stuff
+--FIFO Signals
     signal clk : std_logic := '1';
     signal reset : std_logic := '1';
     signal w_data: std_logic_vector(W-1 downto 0);

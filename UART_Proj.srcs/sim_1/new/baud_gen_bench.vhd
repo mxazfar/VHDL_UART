@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 use IEEE.NUMERIC_STD.ALL;
 
---Testbench file for simulating UART setup with flag FF buffer
+--Testbench file for simulating baud generator
 
 entity baud_gen_bench is
 --  Port ( );
