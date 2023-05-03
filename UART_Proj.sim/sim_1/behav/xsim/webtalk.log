@@ -2,13 +2,13 @@
 # Webtalk v2021.1 (64-bit)
 # SW Build 3247384 on Thu Jun 10 19:36:33 MDT 2021
 # IP Build 3246043 on Fri Jun 11 00:30:35 MDT 2021
-# Start of session at: Sat Apr 29 12:26:05 2023
-# Process ID: 14284
+# Start of session at: Wed May  3 15:11:17 2023
+# Process ID: 6820
 # Current directory: C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim
-# Command line: wbtcv.exe -mode batch -source C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim/xsim.dir/top_behav/webtalk/xsim_webtalk.tcl -notrace
+# Command line: wbtcv.exe -mode batch -source C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim/xsim.dir/fifo_bench_behav/webtalk/xsim_webtalk.tcl -notrace
 # Log file: C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim/webtalk.log
 # Journal file: C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim\webtalk.jou
 #-----------------------------------------------------------
 source C:/Users/moosa/OneDrive/Desktop/College -notrace
 couldn't read file "C:/Users/moosa/OneDrive/Desktop/College": permission denied
-INFO: [Common 17-206] Exiting Webtalk at Sat Apr 29 12:26:05 2023...
+INFO: [Common 17-206] Exiting Webtalk at Wed May  3 15:11:17 2023...

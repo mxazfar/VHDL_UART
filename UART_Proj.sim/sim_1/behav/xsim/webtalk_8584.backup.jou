@@ -2,10 +2,10 @@
 # Webtalk v2021.1 (64-bit)
 # SW Build 3247384 on Thu Jun 10 19:36:33 MDT 2021
 # IP Build 3246043 on Fri Jun 11 00:30:35 MDT 2021
-# Start of session at: Thu Apr 27 22:25:58 2023
-# Process ID: 9516
+# Start of session at: Wed May  3 14:23:58 2023
+# Process ID: 8584
 # Current directory: C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim
-# Command line: wbtcv.exe -mode batch -source C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim/xsim.dir/top_behav/webtalk/xsim_webtalk.tcl -notrace
+# Command line: wbtcv.exe -mode batch -source C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim/xsim.dir/classifier_bench_behav/webtalk/xsim_webtalk.tcl -notrace
 # Log file: C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim/webtalk.log
 # Journal file: C:/Users/moosa/OneDrive/Desktop/College Stuff/Engineering/VHDL/UART_Proj/UART_Proj.sim/sim_1/behav/xsim\webtalk.jou
 #-----------------------------------------------------------

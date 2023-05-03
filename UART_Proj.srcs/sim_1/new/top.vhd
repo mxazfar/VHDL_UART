@@ -21,6 +21,7 @@ architecture Behavioral of top is
     signal din: std_logic_vector(7 downto 0);
     signal tx_done: std_logic;
     signal tx: std_logic; 
+    signal tx_start : std_logic;
     
     --RX stuff
     signal dout_rx : std_logic_vector (7 downto 0);
@@ -29,13 +30,14 @@ architecture Behavioral of top is
     --TX Interface
     signal w_data : std_logic_vector(7 downto 0);
     signal wr_uart : std_logic := '0';
-    signal tx_full : std_logic;
     signal wr_tx_fifo : std_logic;
+    signal tx_fifo_num : std_logic_vector (1 downto 0);
     
     --RX Interface
     signal r_data : std_logic_vector(7 downto 0);
     signal rd_uart : std_logic;
     signal rx_empty : std_logic;  
+    signal rx_fifo_num : std_logic_vector (1 downto 0);
       
     --FIFO RAM 
     signal wr_fifo_ram : std_logic;
@@ -99,7 +101,7 @@ architecture Behavioral of top is
         r_data: out std_logic_vector(8-1 downto 0);
         fifo_full: out std_logic;
         fifo_empty: out std_logic;
-        num_elem: out std_logic_vector(7 downto 0)
+        num_elem: out std_logic_vector(1 downto 0)
     );  
     end component;
     
@@ -136,12 +138,12 @@ u_tx_interface_fifo : interface_fifo port map(
     rd => wr_uart,
     w_data => w_data,
     r_data => din,
-    fifo_full => tx_full
+    num_elem => tx_fifo_num
 );
 
 u_tx: uart_tx port map(
     clk => clk,
-    tx_start => tx_full,
+    tx_start => tx_start,
     reset => reset,
     s_tick => max_tick,
     din => din,
@@ -156,7 +158,8 @@ u_rx_interface_fifo : interface_fifo port map(
     rd => rd_uart,
     w_data => dout_rx,
     r_data => r_data,
-    fifo_empty => rx_empty
+    fifo_empty => rx_empty,
+    num_elem => rx_fifo_num
 );
 
 u_rx : uart_rx port map(
@@ -196,145 +199,194 @@ u_classifier_ram : ram port map(
 reset <= '0';
 clk <= not clk after 10ns;
 
+--process 
+
+--variable fifo_addr : std_logic_vector(8 downto 0) := "000000000";
+
+--begin
+
+--wait for 30ns;
+
+--if(initialTransmission = '0') then
+--    ----------LOAD WRITE DATA INTO TX FIFO----------------------
+--    w_data <= x"FF";
+    
+--    wait for 20ns;
+    
+--    wr_tx_fifo <= '1';
+--    wait for 20ns;
+--    wr_tx_fifo <= '0';
+--    ---------------------------------------------------------
+    
+--    ----------WRITE UART----------------------------------    
+--    wr_uart <= '1';
+--    wait until tx_done = '1';
+--    wr_uart <= '0';
+    
+--    wait for 0.5ms;
+--    ------------------------------------------------------
+    
+--    ---------READ UART, STORING INTO RX FIFO---------------    
+--    rd_uart <= '1';
+--    wait for 500ns;
+--    rd_uart  <= '0';
+    
+--    wait for 0.5ms;
+--    --------------------------------------------------------
+    
+--    -----------WRITE DATA INTO FIFO RAM--------------------    
+--    addr_fifo_ram  <= fifo_addr;
+    
+--    wr_fifo_ram <= '1';
+--    wait for 500ns;
+--    wr_fifo_ram  <= '0';
+    
+--    wait for 0.5ms;
+--    ----------------------------------------------------------    
+        
+--    -------------READ DATA FROM FIFO RAM, SENDING TO CLASSIFIER----- 
+--    rd_fifo_ram <= '1';
+--    wait for 500ns;
+--    rd_fifo_ram <= '0';
+    
+--    --Increment address
+    
+--    wait for 0.5ms;
+--    ------------------------------------------------------------  
+    
+--    ------------WRITE CLASSIFIER TO RAM----------------------
+--    addr_classifier_ram  <= fifo_addr;
+    
+--    wr_classifier_ram <= '1';
+--    wait for 500ns;
+--    wr_classifier_ram  <= '0';
+    
+--    wait for 0.5ms;
+--    ---------------------------------------------------------  
+    
+--    ------------READ CLASSIFIER RAM, WRITEBACK TO TX----------------------
+--    addr_classifier_ram  <= fifo_addr;
+    
+--    rd_classifier_ram <= '1';
+--    wait for 500ns;
+--    rd_classifier_ram  <= '0';
+    
+--    wait for 0.5ms;
+--    w_data <= classifier_ram_out;
+--    ---------------------------------------------------------  
+    
+--    initialTransmission <= '1';
+--end if;
+
+--if(initialTransmission = '1') then 
+--    wait for 0.5ms;
+
+--    ----------LOAD WRITE DATA INTO TX FIFO----------------------
+--    wr_tx_fifo <= '1';
+--    wait for 20ns;
+--    wr_tx_fifo <= '0';
+--    ---------------------------------------------------------
+    
+--    ----------WRITE UART----------------------------------    
+--    wr_uart <= '1';
+--    wait until tx_done = '1';
+--    wr_uart <= '0';
+    
+--    wait for 0.5ms;
+--    ------------------------------------------------------
+    
+--    ---------READ UART, STORING INTO RX FIFO---------------    
+--    rd_uart <= '1';
+--    wait for 500ns;
+--    rd_uart  <= '0';
+    
+--    wait for 0.5ms;
+--    --------------------------------------------------------
+    
+--    -----------WRITE DATA INTO FIFO RAM--------------------
+--    fifo_addr := std_logic_vector(unsigned(fifo_addr) + 1);    
+--    addr_fifo_ram  <= fifo_addr;
+    
+--    wr_fifo_ram <= '1';
+--    wait for 500ns;
+--    wr_fifo_ram  <= '0';
+    
+--    wait for 0.5ms;
+--    ----------------------------------------------------------    
+        
+--    -------------READ DATA FROM FIFO RAM, SENDING TO CLASSIFIER----- 
+--    rd_fifo_ram <= '1';
+--    wait for 500ns;
+--    rd_fifo_ram <= '0';
+    
+--    wait for 0.5ms;
+--    ------------------------------------------------------------  
+    
+--    ------------WRITE CLASSIFIER TO RAM----------------------
+--    addr_classifier_ram  <= fifo_addr;
+    
+--    wr_classifier_ram <= '1';
+--    wait for 500ns;
+--    wr_classifier_ram  <= '0';
+    
+--    wait for 0.5ms;
+--    ---------------------------------------------------------  
+    
+--    ------------READ CLASSIFIER RAM, WRITEBACK TO TX----------------------
+--    addr_classifier_ram  <= fifo_addr;
+    
+--    rd_classifier_ram <= '1';
+--    wait for 500ns;
+--    rd_classifier_ram  <= '0';
+    
+--    wait for 0.5ms;
+--    w_data <= classifier_ram_out;
+--    ---------------------------------------------------------  
+
+--end if;
+
+--end process;
+
 process begin
 
-wait for 30ns;
+wait for 10ns;
 
-if(initialTransmission = '0') then
-    ----------LOAD WRITE DATA INTO TX FIFO----------------------
-    w_data <= x"FF";
-    
-    wait for 20ns;
-    
-    wr_tx_fifo <= '1';
-    wait for 20ns;
-    wr_tx_fifo <= '0';
-    ---------------------------------------------------------
-    
-    ----------WRITE UART----------------------------------    
-    wr_uart <= '1';
-    wait until tx_done = '1';
-    wr_uart <= '0';
-    
-    wait for 0.5ms;
-    ------------------------------------------------------
-    
-    ---------READ UART, STORING INTO RX FIFO---------------    
-    rd_uart <= '1';
-    wait for 500ns;
-    rd_uart  <= '0';
-    
-    wait for 0.5ms;
-    --------------------------------------------------------
-    
-    -----------WRITE DATA INTO FIFO RAM--------------------    
-    addr_fifo_ram  <= "000000000";
-    
-    wr_fifo_ram <= '1';
-    wait for 500ns;
-    wr_fifo_ram  <= '0';
-    
-    wait for 0.5ms;
-    ----------------------------------------------------------    
-        
-    -------------READ DATA FROM FIFO RAM, SENDING TO CLASSIFIER----- 
-    rd_fifo_ram <= '1';
-    wait for 500ns;
-    rd_fifo_ram <= '0';
-    
-    wait for 0.5ms;
-    ------------------------------------------------------------  
-    
-    ------------WRITE CLASSIFIER TO RAM----------------------
-    addr_classifier_ram  <= "000000000";
-    
-    wr_classifier_ram <= '1';
-    wait for 500ns;
-    wr_classifier_ram  <= '0';
-    
-    wait for 0.5ms;
-    ---------------------------------------------------------  
-    
-    ------------READ CLASSIFIER RAM, WRITEBACK TO TX----------------------
-    addr_classifier_ram  <= "000000000";
-    
-    rd_classifier_ram <= '1';
-    wait for 500ns;
-    rd_classifier_ram  <= '0';
-    
-    wait for 0.5ms;
-    w_data <= classifier_ram_out;
-    ---------------------------------------------------------  
-    
-    initialTransmission <= '1';
-end if;
+w_data <= "11111111";
 
-if(initialTransmission = '1') then 
-    wait for 0.5ms;
+wr_tx_fifo <= '1';
+wait for 20ns;
+wr_tx_fifo <= '0';
 
-    ----------LOAD WRITE DATA INTO TX FIFO----------------------
-    wr_tx_fifo <= '1';
-    wait for 20ns;
-    wr_tx_fifo <= '0';
-    ---------------------------------------------------------
-    
-    ----------WRITE UART----------------------------------    
-    wr_uart <= '1';
-    wait until tx_done = '1';
-    wr_uart <= '0';
-    
-    wait for 0.5ms;
-    ------------------------------------------------------
-    
-    ---------READ UART, STORING INTO RX FIFO---------------    
-    rd_uart <= '1';
-    wait for 500ns;
-    rd_uart  <= '0';
-    
-    wait for 0.5ms;
-    --------------------------------------------------------
-    
-    -----------WRITE DATA INTO FIFO RAM--------------------    
-    addr_fifo_ram  <= "000000000";
-    
-    wr_fifo_ram <= '1';
-    wait for 500ns;
-    wr_fifo_ram  <= '0';
-    
-    wait for 0.5ms;
-    ----------------------------------------------------------    
-        
-    -------------READ DATA FROM FIFO RAM, SENDING TO CLASSIFIER----- 
-    rd_fifo_ram <= '1';
-    wait for 500ns;
-    rd_fifo_ram <= '0';
-    
-    wait for 0.5ms;
-    ------------------------------------------------------------  
-    
-    ------------WRITE CLASSIFIER TO RAM----------------------
-    addr_classifier_ram  <= "000000000";
-    
-    wr_classifier_ram <= '1';
-    wait for 500ns;
-    wr_classifier_ram  <= '0';
-    
-    wait for 0.5ms;
-    ---------------------------------------------------------  
-    
-    ------------READ CLASSIFIER RAM, WRITEBACK TO TX----------------------
-    addr_classifier_ram  <= "000000000";
-    
-    rd_classifier_ram <= '1';
-    wait for 500ns;
-    rd_classifier_ram  <= '0';
-    
-    wait for 0.5ms;
-    w_data <= classifier_ram_out;
-    ---------------------------------------------------------  
-
-end if;
+wait for 10ms;
 
 end process;
+
+--TX_FIFO-TX
+process(tx_fifo_num)
+begin
+
+    if(tx_fifo_num = "11") then
+        wr_uart <= '1';
+    else 
+        wr_uart <= '0';
+    end if;
+
+end process;
+
+--FIFO-RAM1
+process(rx_fifo_num)
+begin
+
+    if(rx_fifo_num = "11") then
+        rd_uart <= '1';
+    else 
+        rd_uart <= '0';
+    end if;
+
+end process;
+
+--RAM1-Classification-RAM2
+
+--RAM2-FIFO_TX
 
 end Behavioral;
